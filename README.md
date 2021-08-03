@@ -1,5 +1,7 @@
 # Kaleidoscope: Implementing a Language with LLVM
 
+[Tutorial on LLVM home](https://llvm.org/docs/tutorial/MyFirstLanguageFrontend/index.html)
+
 ## (ofey404) How to build it
 I build it on Fedora 34, llvm version 12.0.0, clang++ 12.0.0:
 
@@ -8,6 +10,10 @@ make
 ./main
 # This should bring up a simple repl
 ```
+
+----
+
+## Original README by ghaiklor
 
 ## Why?
 
