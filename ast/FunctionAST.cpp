@@ -21,7 +21,11 @@ llvm::Function *FunctionAST::codegen() {
 
   if (llvm::Value *RetVal = Body->codegen()) {
     Builder.CreateRet(RetVal);
+    // Validate the generated code, checking for consistency.
     verifyFunction(*TheFunction);
+
+    // Optimize the function.
+    TheFPM->run(*TheFunction);
 
     return TheFunction;
   }

@@ -32,6 +32,10 @@
 #include "llvm/IR/Module.h"
 #include "llvm/IR/Type.h"
 #include "llvm/IR/Verifier.h"
+#include "llvm/Transforms/InstCombine/InstCombine.h"
+#include "llvm/Transforms/Scalar.h"
+#include "llvm/Transforms/Scalar/GVN.h"
+
 
 // stdlib headers
 #include <algorithm>
@@ -104,6 +108,25 @@ static void MainLoop() {
   }
 }
 
+void InitializeModuleAndPassManager(void) {
+  // Open a new module.
+  TheModule = std::make_unique<Module>("my cool jit", TheContext);
+
+  // Create a new pass manager attached to it.
+  TheFPM = std::make_unique<legacy::FunctionPassManager>(TheModule.get());
+
+  // Do simple "peephole" optimizations and bit-twiddling optzns.
+  TheFPM->add(llvm::createInstructionCombiningPass());
+  // Reassociate expressions.
+  TheFPM->add(llvm::createReassociatePass());
+  // Eliminate Common SubExpressions.
+  TheFPM->add(llvm::createGVNPass());
+  // Simplify the control flow graph (deleting unreachable blocks, etc).
+  TheFPM->add(llvm::createCFGSimplificationPass());
+
+  TheFPM->doInitialization();
+}
+
 int main() {
   BinopPrecedence['<'] = 10;
   BinopPrecedence['+'] = 20;
@@ -113,7 +136,7 @@ int main() {
   fprintf(stderr, "ready> ");
   getNextToken();
 
-  TheModule = std::make_unique<Module>("My awesome JIT", TheContext);
+  InitializeModuleAndPassManager();
 
   MainLoop();
 

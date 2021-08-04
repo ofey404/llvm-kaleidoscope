@@ -11,3 +11,6 @@ std::unique_ptr<llvm::Module> TheModule;
 
 // This map keeps track of which values are defined in the current scope
 std::map<std::string, llvm::Value *> NamedValues;
+
+// This is an object that hold and organize the LLVM optimizations
+std::unique_ptr<llvm::legacy::FunctionPassManager> TheFPM;
